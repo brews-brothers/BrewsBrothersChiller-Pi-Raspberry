@@ -3,8 +3,9 @@ var router = express.Router();
 var bcrypt = require('bcrypt');
 require('dotenv').load();
 var mongodb = require('mongodb');
-
+var io = require('socket.io-client');
 var startTime;
+var socket;
 
 var url = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/pidatabase';
 /* GET home page. */
@@ -25,7 +26,7 @@ router.post('/', function(req, res, next) {
           }
           startTime = Date.now();
           //Open socket to backend server
-
+          socket = io.connect(process.env.NODE_URL);
           monitorCycle();
           res.send('started cycle')
         })
@@ -43,7 +44,7 @@ router.post('/', function(req, res, next) {
 
 function monitorCycle(){
   var currentTime = Date.now();
-  var timeElapsed = currentTime - startTime;
+  var timeElapsed = (currentTime - startTime)/1000;
   var setTemp;
 
   mongodb.MongoClient.connect(url,function(err,db){
@@ -53,9 +54,9 @@ function monitorCycle(){
     var schedule = db.collection('schedule');
     schedule.find().toArray(function(err,results){
       var scheduleArray = JSON.parse(results[0].schedule);
-      console.log(scheduleArray);
       for(var i = 0; i < scheduleArray.length; i++){
         if(scheduleArray[i][0] <= timeElapsed){
+          console.log('scheduleArray = '+scheduleArray[i][0]+'  '+timeElapsed);
           if(!setTemp){
             setTemp = scheduleArray[i][1];
             var setTime = scheduleArray[i][0];
@@ -68,10 +69,44 @@ function monitorCycle(){
         }
       }
       console.log(setTemp);
+      if(scheduleArray[scheduleArray.length-1][0] < timeElapsed){
+        finishCycle();
+        return;
+      }
+      //Check Temp on Pi
+      var piTemp = 100;
+      var compressorOn = true;
+      if(piTemp - setTemp > 2){
+        //Turn Compressor On
+      }
+      else if(piTemp - setTemp < 0){
+        //Turn compressor off
+      }
+      //Create object
+      var logData = {
+        time:timeElapsed,
+        setTemp:setTemp,
+        beerTemp:piTemp,
+        compressorOn:compressorOn
+      }
+      var logs = db.collection('logs');
+      console.log(logData);
+
+      //Send data through sockets
+      socket.emit('logData',logData);
+        setTimeout(monitorCycle,5000);
+      // })
     })
   })
 
 }
+
+function finishCycle(){
+  //Turn Compressor off
+  //Close socket connection
+  socket.disconnect();
+}
+
 
 module.exports = {
   router:router,
