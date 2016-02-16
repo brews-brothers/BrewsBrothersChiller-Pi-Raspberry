@@ -7,6 +7,12 @@ var io = require('socket.io-client');
 var startTime;
 var socket;
 
+router.get('/', function(req, res){
+  bcrypt.hash(process.env.SERVER_SECRET, 0, function(err, hash){
+    res.send(hash)
+  })
+})
+
 var url = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/pidatabase';
 /* GET home page. */
 router.post('/', function(req, res, next) {
@@ -18,6 +24,8 @@ router.post('/', function(req, res, next) {
         if(err){
           throw err;
         }
+        var logs = db.collection('log');
+        logs.remove();
         var schedule = db.collection('schedule');
         schedule.remove();
         schedule.insert({schedule:req.body.schedule},function(err,data){
@@ -89,8 +97,11 @@ function monitorCycle(){
         beerTemp:piTemp,
         compressorOn:compressorOn
       }
-      var logs = db.collection('logs');
-      console.log(logData);
+      var logs = db.collection('log');
+      logs.update({ _id: 1 }, { "$push":
+       { log: logData }}, { upsert: true }, function(data){
+         console.log(data);
+       })
 
       //Send data through sockets
       socket.emit('logData',logData);
@@ -103,7 +114,6 @@ function monitorCycle(){
 
 function finishCycle(){
   //Turn Compressor off
-  //Close socket connection
   socket.disconnect();
 }
 
