@@ -84,41 +84,46 @@ function monitorCycle(){
         finishCycle();
         return;
       }
-      var piTemp = CheckPiTemp();
-      console.log(piTemp)
-      var compressorOn = false;
-      if(piTemp - setTemp > 2){
-        compressorCycle(true);
-      }
-      else if(piTemp - setTemp < 0){
-        compressorCycle(false);
-      }
-      //Create object
-      var logData = {
-        time:timeElapsed,
-        setTemp:setTemp,
-        beerTemp:piTemp,
-        compressorOn:compressorOn
-      }
-      var logs = db.collection('log');
-      logs.update({ _id: 1 }, { "$push":
-       { log: logData }}, { upsert: true }, function(data){
-         console.log(data);
-       })
+      CheckPiTemp().then(function(piTemp){
+        console.log(piTemp)
+        var compressorOn = false;
+        if(piTemp - setTemp > 2){
+          compressorCycle(true);
+        }
+        else if(piTemp - setTemp < 0){
+          compressorCycle(false);
+        }
+        //Create object
+        var logData = {
+          time:timeElapsed,
+          setTemp:setTemp,
+          beerTemp:piTemp,
+          compressorOn:compressorOn
+        }
+        var logs = db.collection('log');
+        logs.update({ _id: 1 }, { "$push":
+        { log: logData }}, { upsert: true }, function(data){
+          console.log(data);
+        })
 
-      //Send data through sockets
-      socket.emit('logData',logData);
+        //Send data through sockets
+        socket.emit('logData',logData);
         setTimeout(monitorCycle,5000);
-      // })
+        // })
+
+      });
     })
   })
 
 }
 function CheckPiTemp(){
-  ds18b20.sensors(function(err, ids) {
-    var serialNumber = ids[0];
+  return new Promise(function(resolve, reject){
+    ds18b20.sensors(function(err, ids) {
+      console.log(ids)
+      var serialNumber = ids[0];
+      resolve(ds18b20.temperatureSync(serialNumber));
+    });
   });
-    return ds18b20.temperatureSync(serialNumber);
 }
 
 function finishCycle(){
