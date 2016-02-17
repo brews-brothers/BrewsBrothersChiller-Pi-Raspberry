@@ -67,7 +67,6 @@ function monitorCycle(){
       var scheduleArray = JSON.parse(results[0].schedule);
       for(var i = 0; i < scheduleArray.length; i++){
         if(scheduleArray[i][0] <= timeElapsed){
-          console.log('scheduleArray = '+scheduleArray[i][0]+'  '+timeElapsed);
           if(!setTemp){
             setTemp = scheduleArray[i][1];
             var setTime = scheduleArray[i][0];
@@ -85,7 +84,7 @@ function monitorCycle(){
         return;
       }
       CheckPiTemp().then(function(piTemp){
-        console.log(piTemp)
+        console.log("Pi Temp is "+piTemp);
         var compressorOn = false;
         if(piTemp - setTemp > 2){
           compressorCycle(true);
@@ -102,8 +101,8 @@ function monitorCycle(){
         }
         var logs = db.collection('log');
         logs.update({ _id: 1 }, { "$push":
-        { log: logData }}, { upsert: true }, function(data){
-          console.log(data);
+        { log: logData }}, { upsert: true }, function(err, data){
+          console.log("database data "+ data)
         })
 
         //Send data through sockets
@@ -119,7 +118,7 @@ function monitorCycle(){
 function CheckPiTemp(){
   return new Promise(function(resolve, reject){
     ds18b20.sensors(function(err, ids) {
-      console.log(ids)
+
       var serialNumber = ids[0];
       resolve(ds18b20.temperatureSync(serialNumber));
     });
