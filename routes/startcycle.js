@@ -9,6 +9,7 @@ var Gpio = require('onoff').Gpio;
 var startTime;
 var socket;
 var compressor = new Gpio(16, 'out');
+var url = 'mongodb://localhost:27017/pidatabase';
 
 router.get('/', function(req, res){
   bcrypt.hash(process.env.SERVER_SECRET, 0, function(err, hash){
@@ -16,7 +17,7 @@ router.get('/', function(req, res){
   })
 })
 
-var url = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/pidatabase';
+
 /* GET home page. */
 router.post('/', function(req, res, next) {
   var password = req.body.password;
