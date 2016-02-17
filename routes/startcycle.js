@@ -86,7 +86,7 @@ function monitorCycle(){
       }
       var piTemp = CheckPiTemp();
       console.log(piTemp)
-      var compressorOn = true;
+      var compressorOn = false;
       if(piTemp - setTemp > 2){
         compressorCycle(true);
       }
@@ -129,8 +129,10 @@ function finishCycle(){
 function compressorCycle(value){
   if(value){
     compressor.writeSync(1);
+    compressorOn = true;
   }else{
     compressor.writeSync(0);
+    compressorOn = false;
   }
 }
 
