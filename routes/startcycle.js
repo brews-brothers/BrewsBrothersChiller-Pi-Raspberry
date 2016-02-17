@@ -4,8 +4,11 @@ var bcrypt = require('bcrypt');
 require('dotenv').load();
 var mongodb = require('mongodb');
 var io = require('socket.io-client');
+var ds18b20 = require('ds18b20');
+var Gpio = require('onoff').Gpio;
 var startTime;
 var socket;
+var compressor = new Gpio(16, 'out');
 
 router.get('/', function(req, res){
   bcrypt.hash(process.env.SERVER_SECRET, 0, function(err, hash){
@@ -81,14 +84,14 @@ function monitorCycle(){
         finishCycle();
         return;
       }
-      //Check Temp on Pi
-      var piTemp = 100;
+      var piTemp = CheckPiTemp();
+      console.log(piTemp)
       var compressorOn = true;
       if(piTemp - setTemp > 2){
-        //Turn Compressor On
+        compressorCycle(true);
       }
       else if(piTemp - setTemp < 0){
-        //Turn compressor off
+        compressorCycle(false);
       }
       //Create object
       var logData = {
@@ -111,12 +114,25 @@ function monitorCycle(){
   })
 
 }
+function CheckPiTemp(){
+  ds18b20.sensors(function(err, ids) {
+    var serialNumber = ids[0];
+  });
+    return ds18b20.temperatureSync(serialNumber);
+}
 
 function finishCycle(){
-  //Turn Compressor off
+  compressorCycle(false);
   socket.disconnect();
 }
 
+function compressorCycle(value){
+  if(value){
+    compressor.writeSync(1);
+  }else{
+    compressor.writeSync(0);
+  }
+}
 
 module.exports = {
   router:router,
