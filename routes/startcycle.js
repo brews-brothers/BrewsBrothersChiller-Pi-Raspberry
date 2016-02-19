@@ -20,10 +20,12 @@ router.get('/', function(req, res){
 
 /* GET home page. */
 router.post('/', function(req, res, next) {
-  var password = req.body.password;
-  if(bcrypt.compareSync(process.env.SERVER_SECRET,password)){
+
+
+ var password = req.body.password;
+req.body.schedule = JSON.parse(req.body.schedule);
+ if(password == 'hello'){
     if(req.body.schedule){
-      console.log(req.body.schedule);
       mongodb.MongoClient.connect(url,function(err,db){
         if(err){
           throw err;
@@ -65,7 +67,7 @@ function monitorCycle(){
     }
     var schedule = db.collection('schedule');
     schedule.find().toArray(function(err,results){
-      var scheduleArray = JSON.parse(results[0].schedule);
+      var scheduleArray = (results[0].schedule);
       for(var i = 0; i < scheduleArray.length; i++){
         if(scheduleArray[i][0] <= timeElapsed){
           if(!setTemp){
@@ -79,13 +81,13 @@ function monitorCycle(){
           }
         }
       }
-      console.log(setTemp);
+      console.log('Set Temperature = '+setTemp);
       if(scheduleArray[scheduleArray.length-1][0] < timeElapsed){
         finishCycle();
         return;
       }
       CheckPiTemp().then(function(piTemp){
-        console.log("Pi Temp is "+piTemp);
+        console.log("Pi Temp =  "+piTemp);
         var compressorOn = false;
         if(piTemp - setTemp > 2){
           compressorCycle(true);
@@ -93,6 +95,7 @@ function monitorCycle(){
         else if(piTemp - setTemp < 0){
           compressorCycle(false);
         }
+	console.log('Compressor = '+compressorOn);
         //Create object
         var logData = {
           time:timeElapsed,
@@ -103,7 +106,6 @@ function monitorCycle(){
         var logs = db.collection('log');
         logs.update({ _id: 1 }, { "$push":
         { log: logData }}, { upsert: true }, function(err, data){
-          console.log("database data "+ data)
         })
 
         //Send data through sockets

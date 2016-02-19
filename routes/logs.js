@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
       throw err;
     }
     var logs = db.collection('log');
-    log.find({}).toArray(function(err, log){
+    logs.find({}).toArray(function(err, log){
       res.json(log);
     })
   });

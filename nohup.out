@@ -1,0 +1,38 @@
+trap: SIGINT: bad trap
+./lt.sh: 9: ./lt.sh: running: not found
+db level locking enabled: 1
+mongod --help for help and startup options
+Fri Feb 19 17:39:45 
+Fri Feb 19 17:39:45 warning: 32-bit servers don't have journaling enabled by default. Please use --journal if you want durability.
+Fri Feb 19 17:39:45 
+warning: some regex utf8 things will not work.  pcre build doesn't have --enable-unicode-properties
+Fri Feb 19 17:39:45 [initandlisten] MongoDB starting : pid=2896 port=27017 dbpath=/data/db/ 32-bit host=raspberrypi
+Fri Feb 19 17:39:45 [initandlisten] 
+Fri Feb 19 17:39:45 [initandlisten] ** NOTE: This is a development version (2.1.1-pre-) of MongoDB.
+Fri Feb 19 17:39:45 [initandlisten] **       Not recommended for production.
+Fri Feb 19 17:39:45 [initandlisten] 
+Fri Feb 19 17:39:45 [initandlisten] ** NOTE: when using MongoDB 32 bit, you are limited to about 2 gigabytes of data
+Fri Feb 19 17:39:45 [initandlisten] **       see http://blog.mongodb.org/post/137788967/32-bit-limitations
+Fri Feb 19 17:39:45 [initandlisten] **       with --journal, the limit is lower
+Fri Feb 19 17:39:45 [initandlisten] 
+Fri Feb 19 17:39:45 [initandlisten] db version v2.1.1-pre-, pdfile version 4.5
+Fri Feb 19 17:39:45 [initandlisten] git version: 47fbbdceb21fc2b791d22db7f01792500647daa9
+Fri Feb 19 17:39:45 [initandlisten] build info: Linux raspberrypi 3.2.27+ #102 PREEMPT Sat Sep 1 01:00:50 BST 2012 armv6l BOOST_LIB_VERSION=1_49
+Fri Feb 19 17:39:45 [initandlisten] options: {}
+Fri Feb 19 17:39:45 [websvr] admin web console waiting for connections on port 28017
+Fri Feb 19 17:39:45 [initandlisten] waiting for connections on port 27017
+Fri Feb 19 17:40:19 got signal 2 (Interrupt), will terminate after current cmd ends
+Fri Feb 19 17:40:19 [interruptThread] now exiting
+Fri Feb 19 17:40:19 dbexit: 
+Fri Feb 19 17:40:19 [interruptThread] shutdown: going to close listening sockets...
+Fri Feb 19 17:40:19 [interruptThread] closing listening socket: 5
+Fri Feb 19 17:40:19 [interruptThread] closing listening socket: 6
+Fri Feb 19 17:40:19 [interruptThread] closing listening socket: 7
+Fri Feb 19 17:40:19 [interruptThread] removing socket file: /tmp/mongodb-27017.sock
+Fri Feb 19 17:40:19 [interruptThread] shutdown: going to flush diaglog...
+Fri Feb 19 17:40:19 [interruptThread] shutdown: going to close sockets...
+Fri Feb 19 17:40:19 [interruptThread] shutdown: waiting for fs preallocator...
+Fri Feb 19 17:40:19 [interruptThread] shutdown: closing all files...
+Fri Feb 19 17:40:19 [interruptThread] closeAllFiles() finished
+Fri Feb 19 17:40:19 [interruptThread] shutdown: removing fs lock...
+Fri Feb 19 17:40:19 dbexit: really exiting now
